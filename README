@@ -1,0 +1,64 @@
+Notes:
+1) The molecule test is here to test the ansible section only, run:
+  molecule test
+All the playbook does is set SSHD ciphers and restart SSHD
+
+2) build with packer:
+  packer build centos7-vbox.json
+  or for qemu/kvm:
+  packer build centos7.json
+
+3) Convert image to vhd format for Azure if needed:
+  for qemu type:
+    qemu-img convert -f qcow2 -O vpc output_centos_tdhtest/tdhtest.qcow2 output_centos_tdhtest/tdhtest.vhd
+  for virtualbox/vmdk file:
+    qemu-img convert -f vmdk -O vpc x.vmdk y.vhd
+
+4) Delete old qcow2 format image to save space:
+  rm output_centos_tdhtest/tdhtest.qcow2
+
+
+
+# TODO:
+Test with raw format in centos7.json, see if it speeds things up
+
+
+# TODO:
+Use variables for the root password or reset/wipe/randomize it with the ansible section
+See this for variables if we use that:
+https://www.packer.io/docs/templates/user-variables.html
+
+#TODO:
+upload image to azure properly
+
+azure login
+azure vm image create <ImageName> `
+    --blob-url <BlobStorageURL>/<YourImagesFolder>/<VHDName> `
+    --os Linux <PathToVHDFile>
+
+In the previous example:
+BlobStorageURL is the URL for the storage account you plan to use
+YourImagesFolder is the container within blob storage where you want to store your images
+VHDName is the label that appears in portal to identify the virtual hard disk.
+PathToVHDFile is the full path and name of the .vhd file on your machine.
++
+The following command shows a complete example:
+Azure CLI
+
+Copy
+azure vm image create myImage `
+    --blob-url https://mystorage.blob.core.windows.net/vhds/myimage.vhd `
+    --os Linux /home/ahmet/myimage.vhd
+
+
+Create a VM from the image
+azure vm create --userName ops --password P@ssw0rd! --vm-size Small --ssh `
+    --location "West US" "myDeployedVM" myImage
+
+
+I did:
+azure config mode asm
+azure vm image create jamespImage --blob-url https://mystorage.blob.core.windows.net/vhds/jamespImage.vhd --os Linux output_centos_tdhtest/tdhtest.vhd
+
+Complains for some reason, unsure why.
+Tried to install az (beta/new version of cli) but it wants a newer urllib3?? Maybe Ubuntu has a newer one

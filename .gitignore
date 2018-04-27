@@ -1,0 +1,6 @@
+.molecule
+packer_cache
+output_*
+output-*
+roles/
+playbook.retry

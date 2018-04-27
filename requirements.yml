@@ -1,0 +1,26 @@
+---
+
+- name: devops.bootstrap
+  src: git@git.reform.hmcts.net:devops/bootstrap-role.git
+  scm: git
+  version: master
+
+- name: devops.filebeat
+  src: git@git.reform.hmcts.net:devops/filebeat-role.git
+  scm: git
+  version: master
+
+- name: devops.repos
+  src: git@git.reform.hmcts.net:devops/repos-role.git
+  scm: git
+  version: master
+
+- name: clamav-server
+  src: git@git.reform.hmcts.net:devops/clamav-server-role.git
+  scm: git
+  version: master
+
+- name: zabbixagent-role
+  src: git@git.reform.hmcts.net:devops/zabbixagent-role.git
+  scm: git
+  version: master

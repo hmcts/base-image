@@ -1,0 +1,40 @@
+---
+- hosts: all
+
+  tasks:
+    - name: Fix ssh ciphers
+      lineinfile:
+        dest: '/etc/ssh/sshd_config'
+        regexp: '^Ciphers '
+        line: "Ciphers aes128-ctr,aes192-ctr,aes256-ctr,aes192-cbc,3des-cbc,aes128-cbc,aes256-cbc"
+    - name: Restart SSH
+      service:
+        name: sshd
+        state: restarted
+
+
+    - name: Azure grub changes
+      lineinfile:
+        dest: '/etc/default/grub'
+        regexp: '^GRUB_CMDLINE_LINUX'
+        line: 'GRUB_CMDLINE_LINUX="rootdelay=300 console=ttyS0 earlyprintk=ttyS0 net.ifnames=0 crashkernel=auto"'
+    - name: Update grub
+      command: grub2-mkconfig -o /boot/grub2/grub.cfg
+      changed_when: false
+
+
+    - name: Azure drivers
+      lineinfile:
+        dest: '/etc/dracut.conf'
+        line: 'add_drivers+=”hv_vmbus hv_netvsc hv_storvsc”'
+    - name: rebuild dracut
+      command: dracut -f -v
+      changed_when: false
+
+# TODO: after checking/changing bootstrap:
+# /etc/waagent.conf
+# ResourceDisk.Format=y
+# ResourceDisk.Filesystem=ext4
+# ResourceDisk.MountPoint=/mnt/resource
+# ResourceDisk.EnableSwap=y
+# ResourceDisk.SwapSizeMB=2048    ## NOTE: set this to whatever you need it to be.
